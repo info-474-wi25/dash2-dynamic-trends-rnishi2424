@@ -22,8 +22,21 @@ const svg2_RENAME = d3.select("#lineChart2")
 // const tooltip = ...
 
 // 2.a: LOAD...
-d3.csv("YOUR_CSV_NAME.csv").then(data => {
+d3.csv("aircraft_incidents.csv").then(data => {
     // 2.b: ... AND TRANSFORM DATA
+    // check data column
+    // console.log(typeof data[0].Event_Date);
+
+    data.forEach(d => {
+        d.date = new Date(d.Event_Date);
+        d.fatalities = +d.Total_Fatal_Injuries;
+        d.manufacturer = d.Make;
+    });
+
+    // checks
+    // console.log(data[0].date);
+    // console.log(data[0].fatalities);
+    // console.log(data[0].manufacturer);
 
     // 3.a: SET SCALES FOR CHART 1
 
