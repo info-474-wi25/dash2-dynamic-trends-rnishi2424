@@ -98,6 +98,7 @@ d3.csv("aircraft_incidents.csv").then(data => {
             .attr("fill", "none")
             .attr("stroke", color(manufacturer))
             .attr("stroke-width", 2)
+            .attr("class", `line-${manufacturer.replace(/\s+/g, "-")}`)
             .attr("d", line);
     });
 
@@ -136,7 +137,17 @@ d3.csv("aircraft_incidents.csv").then(data => {
         .attr("class", "legend")
         .attr("transform", `translate(${width - margin.right - 100}, ${margin.top - 50})`);
 
-    // legend Row
+    // legend title
+    legend.append("text")
+        .attr("class", "legend-title")
+        .attr("x", 0)
+        .attr("y", -10) // Positioning above the first legend row
+        .attr("font-size", "14px")
+        .attr("font-weight", "bold")
+        .attr("fill", "#333")
+        .text("Manufacturers");
+
+    // legend row
     manufacturers.forEach((manufacturer, i) => {
         const legendRow = legend.append("g")
             .attr("class", "legend-row")
@@ -172,6 +183,7 @@ d3.csv("aircraft_incidents.csv").then(data => {
         .style("padding", "10px")
         .style("border-radius", "5px")
         .style("font-size", "12px");
+
     // Mouseover event
     svgLine.selectAll(".data-point") // Create tooltip events
         .data(flattenedData)
@@ -241,6 +253,15 @@ d3.csv("aircraft_incidents.csv").then(data => {
 
     // trendline function
     function drawTrendline(selectedManufacturer) {
+        // reset all lines to original width
+        d3.selectAll("path").filter(d => d).attr("stroke-width", 2);
+
+        // no trendline option
+        if (selectedManufacturer === "None") {
+            svgLine.selectAll(".trendline").remove();
+            return;
+        }
+
         // filter data based on the selected category
         const filteredData = flattenedData.filter(d => d.manufacturer === selectedManufacturer);
 
@@ -262,6 +283,10 @@ d3.csv("aircraft_incidents.csv").then(data => {
             .attr("stroke", "gray")
             .attr("stroke-width", 2)
             .attr("stroke-dasharray", "5,5");
+
+        // highlight original line
+        d3.select(`.line-${selectedManufacturer.replace(/\s+/g, "-")}`)
+            .attr("stroke-width", 4); // Doubled stroke width
     }
 
     drawTrendline("None");
